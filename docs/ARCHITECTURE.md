@@ -22,7 +22,7 @@ flowchart TD
 | Connection | db_connect.php | Shared environment-based configuration, generic failure response and utf8mb4. |
 | Media storage | uploads.php and media.php | MIME, byte/pixel checks and PNG re-encoding; random names outside the web root, served only to authenticated sessions. |
 | Sessions and request integrity | security.php | Strict cookie sessions and constant-time CSRF token verification before POST processing. |
-| Database | MySQL | Original schema and assets are not fully supplied; database integration remains a separate validation gap. |
+| Database | MySQL | A data-free schema was recovered from the original report on 14 November 2026; MySQL import and integration remain validation gaps. Legacy visual assets are not supplied. |
 
 ## Engineering decisions in this change
 
@@ -43,7 +43,7 @@ python tests/http_security_tests.py -v
 
 ## Current boundaries
 
-This is not ready for Internet exposure. Missing schema/fixtures prevent a full MySQL integration run here. Pagination, feed N+1 query consolidation and schema-level integration still need measured work; MySQL transactional behavior cannot be verified against the missing original schema. The JSON delete endpoint uses one locked ownership check and transactional child/post deletion, while existing form deletion retains its original transaction. The old database may reference uploads/ URLs; migrate those files and references explicitly before removing a legacy uploads directory. GIF uploads become a static PNG, so animation is intentionally not preserved. Current source cleanup does not remove historical repository data. Do not treat PHP lint as a security certification.
+This is not ready for Internet exposure. Recovered schema import and database-backed fixtures remain unverified; legacy visual assets are absent. Pagination, feed N+1 query consolidation and schema-level integration still need measured work; MySQL transactional behavior still requires database-backed integration tests against the recovered schema. The JSON delete endpoint uses one locked ownership check and transactional child/post deletion, while existing form deletion retains its original transaction. The old database may reference uploads/ URLs; migrate those files and references explicitly before removing a legacy uploads directory. GIF uploads become a static PNG, so animation is intentionally not preserved. Current source cleanup does not remove historical repository data. Do not treat PHP lint as a security certification.
 
 ## Scaling path and acceptance evidence
 
@@ -55,4 +55,5 @@ Keep data and credentials out of source changes. Reproduce a failure with synthe
 
 ## Local server configuration
 
-Export DB_HOST, DB_NAME, DB_USER and DB_PASSWORD into the PHP process environment; .env.example documents names but is not automatically loaded. Set UPLOAD_DIRECTORY to a writable private directory outside the configured document root (default: a sibling friendzone-uploads directory). Keep it backed up with database references. Set SESSION_COOKIE_SECURE=1 when TLS terminates upstream, and serve the application over HTTPS in shared environments. With the original schema/assets supplied, a local development command is `php -S 127.0.0.1:8000 -t .`; the development server is not a production server. The test upload harness is disabled unless FRIENDZONE_TEST_MODE=1; never enable this test flag on a shared server.
+Export DB_HOST, DB_NAME, DB_USER and DB_PASSWORD into the PHP process environment; .env.example documents names but is not automatically loaded. Set UPLOAD_DIRECTORY to a writable private directory outside the configured document root (default: a sibling friendzone-uploads directory). Keep it backed up with database references. Set SESSION_COOKIE_SECURE=1 when TLS terminates upstream, and serve the application over HTTPS in shared environments. After importing `database/schema.sql` and supplying the missing legacy assets, a local development command is `php -S 127.0.0.1:8000 -t .`; the development server is not a production server. The test upload harness is disabled unless FRIENDZONE_TEST_MODE=1; never enable this test flag on a shared server.
+
