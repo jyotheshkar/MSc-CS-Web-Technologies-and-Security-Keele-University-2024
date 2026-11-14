@@ -22,7 +22,7 @@ flowchart TD
 | Connection | db_connect.php | Shared environment-based configuration, generic failure response and utf8mb4. |
 | Media storage | uploads.php and media.php | MIME, byte/pixel checks and PNG re-encoding; random names outside the web root, served only to authenticated sessions. |
 | Sessions and request integrity | security.php | Strict cookie sessions and constant-time CSRF token verification before POST processing. |
-| Database | MySQL | Original schema and assets are not fully supplied; database integration remains a separate validation gap. |
+| Database | MySQL | A data-free schema was recovered from the original report on 14 November 2026; MySQL import and integration remain validation gaps. Legacy visual assets are not supplied. |
 
 ## Engineering decisions in this change
 
@@ -56,3 +56,4 @@ Keep data and credentials out of source changes. Reproduce a failure with synthe
 ## Local server configuration
 
 Export DB_HOST, DB_NAME, DB_USER and DB_PASSWORD into the PHP process environment; .env.example documents names but is not automatically loaded. Set UPLOAD_DIRECTORY to a writable private directory outside the configured document root (default: a sibling friendzone-uploads directory). Keep it backed up with database references. Set SESSION_COOKIE_SECURE=1 when TLS terminates upstream, and serve the application over HTTPS in shared environments. With the original schema/assets supplied, a local development command is `php -S 127.0.0.1:8000 -t .`; the development server is not a production server. The test upload harness is disabled unless FRIENDZONE_TEST_MODE=1; never enable this test flag on a shared server.
+
